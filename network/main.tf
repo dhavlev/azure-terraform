@@ -16,7 +16,7 @@ provider "azurerm" {
 # RESOURCE GROUP
 resource "azurerm_resource_group" "classic_app" {
   name     = "classic-app"
-  location = "West Europe"
+  location = var.azurerm_resource_group_location
 }
 
 # DDOS PROTECTION

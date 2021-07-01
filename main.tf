@@ -15,4 +15,19 @@ provider "azurerm" {
 
 module "network" {
   source = "./network"
+
+  azurerm_resource_group_location = var.location
+}
+
+module "compute" {
+  source = "./compute"
+
+  azurerm_resource_group_name     = module.network.azurerm_resource_group_name
+  azurerm_resource_group_location = var.location
+  azurerm_subnet_gateway          = module.network.azurerm_subnet_gateway
+  azurerm_subnet_management       = module.network.azurerm_subnet_management
+  azurerm_subnet_web              = module.network.azurerm_subnet_web
+  azurerm_subnet_logic            = module.network.azurerm_subnet_logic
+  azurerm_subnet_data             = module.network.azurerm_subnet_data
+  ubuntu_version                  = var.ubuntu_version
 }
