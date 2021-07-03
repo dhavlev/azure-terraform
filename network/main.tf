@@ -88,46 +88,53 @@ resource "azurerm_network_security_rule" "management_ssh" {
 }
 
 resource "azurerm_network_security_rule" "web_http" {
-  name                        = "web_80"
-  priority                    = 100
-  direction                   = "Inbound"
-  access                      = "Allow"
-  protocol                    = "Tcp"
-  source_port_range           = "*"
-  destination_port_range      = "80"
-  source_address_prefix       = "10.0.0.0/27"
-  destination_address_prefix  = "10.0.0.128/26"
-  resource_group_name         = azurerm_resource_group.classic_app.name
-  network_security_group_name = azurerm_network_security_group.web.name
+  name                         = "web_80"
+  priority                     = 100
+  direction                    = "Inbound"
+  access                       = "Allow"
+  protocol                     = "Tcp"
+  source_port_range            = "*"
+  destination_port_ranges      = [80, 22]
+  source_address_prefix        = "10.0.0.0/27"
+  destination_address_prefixes = ["10.0.0.128/26", "10.0.0.32/27"]
+  resource_group_name          = azurerm_resource_group.classic_app.name
+  network_security_group_name  = azurerm_network_security_group.web.name
 }
 
 resource "azurerm_network_security_rule" "logic_http" {
-  name                        = "http_3000"
-  priority                    = 100
-  direction                   = "Inbound"
-  access                      = "Allow"
-  protocol                    = "Tcp"
-  source_port_range           = "*"
-  destination_port_range      = "3000"
-  source_address_prefix       = "10.0.0.64/26"
-  destination_address_prefix  = "10.0.0.192/26"
-  resource_group_name         = azurerm_resource_group.classic_app.name
-  network_security_group_name = azurerm_network_security_group.logic.name
+  name                         = "http_3000"
+  priority                     = 100
+  direction                    = "Inbound"
+  access                       = "Allow"
+  protocol                     = "Tcp"
+  source_port_range            = "*"
+  destination_port_ranges      = [3000, 22]
+  source_address_prefix        = "10.0.0.64/26"
+  destination_address_prefixes = ["10.0.0.192/26", "10.0.0.32/27"]
+  resource_group_name          = azurerm_resource_group.classic_app.name
+  network_security_group_name  = azurerm_network_security_group.logic.name
 }
 
 resource "azurerm_network_security_rule" "data_http" {
-  name                        = "sql_3306"
-  priority                    = 100
-  direction                   = "Inbound"
-  access                      = "Allow"
-  protocol                    = "Tcp"
-  source_port_range           = "*"
-  destination_port_range      = "3306"
-  source_address_prefix       = "10.0.0.128/26"
-  destination_address_prefix  = "10.0.0.192/26"
-  resource_group_name         = azurerm_resource_group.classic_app.name
-  network_security_group_name = azurerm_network_security_group.data.name
+  name                         = "sql_3306"
+  priority                     = 100
+  direction                    = "Inbound"
+  access                       = "Allow"
+  protocol                     = "Tcp"
+  source_port_range            = "*"
+  destination_port_ranges      = [3306, 22]
+  source_address_prefix        = "10.0.0.128/26"
+  destination_address_prefixes = ["10.0.0.192/26", "10.0.0.32/27"]
+  resource_group_name          = azurerm_resource_group.classic_app.name
+  network_security_group_name  = azurerm_network_security_group.data.name
 }
+
+# gateway: 10.0.0.0/27
+# management: 10.0.0.32/27
+# web: 10.0.0.64/26
+# logic: 10.0.0.128/26
+# data: 10.0.0.192/26
+
 
 # SUBNETS
 resource "azurerm_subnet" "gateway" {
@@ -205,28 +212,50 @@ resource "azurerm_virtual_network" "classic_app" {
 }
 
 # LOADBALANCER
-resource "azurerm_lb" "logic" {
-  name                = "logic"
-  sku                 = "Basic"
+#resource "azurerm_lb" "logic" {
+#  name                = "logic"
+#  sku                 = "Basic"
+#  location            = azurerm_resource_group.classic_app.location
+#  resource_group_name = azurerm_resource_group.classic_app.name
+#
+#  frontend_ip_configuration {
+#    name                          = "logic"
+#    subnet_id                     = azurerm_subnet.logic.id
+#    private_ip_address_allocation = "Dynamic"
+#  }
+#}
+#
+#resource "azurerm_lb" "web" {
+#  name                = "web"
+#  sku                 = "Basic"
+#  location            = azurerm_resource_group.classic_app.location
+#  resource_group_name = azurerm_resource_group.classic_app.name
+#
+#  frontend_ip_configuration {
+#    name                          = "web"
+#    subnet_id                     = azurerm_subnet.web.id
+#    private_ip_address_allocation = "Dynamic"
+#  }
+#}
+
+# BASTION HOST
+
+resource "azurerm_public_ip" "bastion" {
+  name                = "bastion"
   location            = azurerm_resource_group.classic_app.location
   resource_group_name = azurerm_resource_group.classic_app.name
-
-  frontend_ip_configuration {
-    name                          = "logic"
-    subnet_id                     = azurerm_subnet.logic.id
-    private_ip_address_allocation = "Dynamic"
-  }
+  allocation_method   = "Dynamic"
 }
 
-resource "azurerm_lb" "web" {
-  name                = "web"
-  sku                 = "Basic"
+
+resource "azurerm_bastion_host" "bastion" {
+  name                = "bastion"
   location            = azurerm_resource_group.classic_app.location
   resource_group_name = azurerm_resource_group.classic_app.name
 
-  frontend_ip_configuration {
-    name                          = "web"
-    subnet_id                     = azurerm_subnet.web.id
-    private_ip_address_allocation = "Dynamic"
+  ip_configuration {
+    name                 = "bastion"
+    subnet_id            = azurerm_subnet.management.id
+    public_ip_address_id = azurerm_public_ip.bastion.id
   }
 }
