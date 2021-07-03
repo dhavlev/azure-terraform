@@ -103,33 +103,33 @@ resource "azurerm_linux_virtual_machine" "web1" {
   }
 }
 
-#resource "azurerm_linux_virtual_machine" "web2" {
-#  name                = "web2"
-#  resource_group_name = var.azurerm_resource_group_name
-#  admin_username      = "azureuser"
-#  location            = var.azurerm_resource_group_location
-#  size                = "Standard_B1ls"
-#  zone                = "3"
-#
-#  network_interface_ids = [azurerm_network_interface.web2.id]
-#
-#  source_image_reference {
-#    publisher = "Canonical"
-#    offer     = "UbuntuServer"
-#    sku       = var.ubuntu_version
-#    version   = "latest"
-#  }
-#
-#  admin_ssh_key {
-#    username   = "azureuser"
-#    public_key = file("./compute/vm-access.pub")
-#  }
-#
-#  os_disk {
-#    caching              = "ReadWrite"
-#    storage_account_type = "Standard_LRS"
-#  }
-#}
+resource "azurerm_linux_virtual_machine" "web2" {
+  name                = "web2"
+  resource_group_name = var.azurerm_resource_group_name
+  admin_username      = "azureuser"
+  location            = var.azurerm_resource_group_location
+  size                = "Standard_B1ls"
+  zone                = "3"
+
+  network_interface_ids = [azurerm_network_interface.web2.id]
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = var.ubuntu_version
+    version   = "latest"
+  }
+
+  admin_ssh_key {
+    username   = "azureuser"
+    public_key = file("./compute/vm-access.pub")
+  }
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+}
 
 resource "azurerm_linux_virtual_machine" "logic1" {
   name                = "logic1"
@@ -159,33 +159,33 @@ resource "azurerm_linux_virtual_machine" "logic1" {
   }
 }
 
-#resource "azurerm_linux_virtual_machine" "logic2" {
-#  name                = "logic2"
-#  resource_group_name = var.azurerm_resource_group_name
-#  admin_username      = "azureuser"
-#  location            = var.azurerm_resource_group_location
-#  size                = "Standard_B1ls"
-#  zone                = "3"
-#
-#  network_interface_ids = [azurerm_network_interface.logic2.id]
-#
-#  source_image_reference {
-#    publisher = "Canonical"
-#    offer     = "UbuntuServer"
-#    sku       = var.ubuntu_version
-#    version   = "latest"
-#  }
-#
-#  admin_ssh_key {
-#    username   = "azureuser"
-#    public_key = file("./compute/vm-access.pub")
-#  }
-#
-#  os_disk {
-#    caching              = "ReadWrite"
-#    storage_account_type = "Standard_LRS"
-#  }
-#}
+resource "azurerm_linux_virtual_machine" "logic2" {
+  name                = "logic2"
+  resource_group_name = var.azurerm_resource_group_name
+  admin_username      = "azureuser"
+  location            = var.azurerm_resource_group_location
+  size                = "Standard_B1ls"
+  zone                = "3"
+
+  network_interface_ids = [azurerm_network_interface.logic2.id]
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = var.ubuntu_version
+    version   = "latest"
+  }
+
+  admin_ssh_key {
+    username   = "azureuser"
+    public_key = file("./compute/vm-access.pub")
+  }
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+}
 
 resource "azurerm_linux_virtual_machine" "data1" {
   name                = "data1"

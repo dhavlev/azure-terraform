@@ -38,6 +38,12 @@ resource "azurerm_network_interface_backend_address_pool_association" "web1" {
   backend_address_pool_id = azurerm_lb_backend_address_pool.web.id
 }
 
+resource "azurerm_network_interface_backend_address_pool_association" "web2" {
+  network_interface_id    = var.azurerm_network_interface_web2
+  ip_configuration_name   = "web2"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.web.id
+}
+
 resource "azurerm_lb_probe" "web" {
   resource_group_name = var.azurerm_resource_group_name
   loadbalancer_id     = azurerm_lb.gateway.id
@@ -80,6 +86,12 @@ resource "azurerm_lb_backend_address_pool" "logic" {
 resource "azurerm_network_interface_backend_address_pool_association" "logic1" {
   network_interface_id    = var.azurerm_network_interface_logic1
   ip_configuration_name   = "logic1"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.logic.id
+}
+
+resource "azurerm_network_interface_backend_address_pool_association" "logic2" {
+  network_interface_id    = var.azurerm_network_interface_logic2
+  ip_configuration_name   = "logic2"
   backend_address_pool_id = azurerm_lb_backend_address_pool.logic.id
 }
 

@@ -7,7 +7,7 @@ variable "azurerm_subnet_logic" {}
 variable "azurerm_subnet_data" {}
 variable "ubuntu_version" {}
 variable "azurerm_network_interface_web1" {}
-#variable "azurerm_network_interface_web2" {}
+variable "azurerm_network_interface_web2" {}
 variable "azurerm_network_interface_logic1" {}
-#variable "azurerm_network_interface_logic2" {}
+variable "azurerm_network_interface_logic2" {}
 variable "azurerm_network_interface_data1" {}

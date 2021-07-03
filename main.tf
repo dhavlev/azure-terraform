@@ -44,6 +44,8 @@ module "loadbalancer" {
   azurerm_subnet_data              = module.network.azurerm_subnet_data
   ubuntu_version                   = var.ubuntu_version
   azurerm_network_interface_web1   = module.compute.azurerm_network_interface_web1
+  azurerm_network_interface_web2   = module.compute.azurerm_network_interface_web2
   azurerm_network_interface_logic1 = module.compute.azurerm_network_interface_logic1
+  azurerm_network_interface_logic2 = module.compute.azurerm_network_interface_logic2
   azurerm_network_interface_data1  = module.compute.azurerm_network_interface_data1
 }
