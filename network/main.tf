@@ -73,16 +73,129 @@ resource "azurerm_network_security_rule" "gateway_http" {
   network_security_group_name = azurerm_network_security_group.gateway.name
 }
 
-resource "azurerm_network_security_rule" "management_ssh" {
-  name                        = "ssh_22"
-  priority                    = 100
+#resource "azurerm_network_security_rule" "management_ssh" {
+#  name                        = "ssh_22"
+#  priority                    = 100
+#  direction                   = "Inbound"
+#  access                      = "Allow"
+#  protocol                    = "Tcp"
+#  source_port_range           = "*"
+#  destination_port_range      = "22"
+#  source_address_prefix       = "*"
+#  destination_address_prefix  = "*"
+#  resource_group_name         = azurerm_resource_group.classic_app.name
+#  network_security_group_name = azurerm_network_security_group.management.name
+#}
+#
+
+resource "azurerm_network_security_rule" "management_https" {
+  name                        = "allow_https_inbound"
+  priority                    = 120
   direction                   = "Inbound"
   access                      = "Allow"
   protocol                    = "Tcp"
   source_port_range           = "*"
-  destination_port_range      = "22"
-  source_address_prefix       = "*"
+  destination_port_range      = "443"
+  source_address_prefix       = "Internet"
   destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.classic_app.name
+  network_security_group_name = azurerm_network_security_group.management.name
+}
+
+resource "azurerm_network_security_rule" "management_gateway" {
+  name                        = "allow_gateway_manager_inbound"
+  priority                    = 130
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "443"
+  source_address_prefix       = "GatewayManager"
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.classic_app.name
+  network_security_group_name = azurerm_network_security_group.management.name
+}
+
+resource "azurerm_network_security_rule" "management_loadbalancer" {
+  name                        = "allow_azure_lb_inbound"
+  priority                    = 140
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "443"
+  source_address_prefix       = "AzureLoadBalancer"
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.classic_app.name
+  network_security_group_name = azurerm_network_security_group.management.name
+}
+
+resource "azurerm_network_security_rule" "management_vnet" {
+  name                        = "allow_bastion_communication"
+  priority                    = 150
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "*"
+  source_port_range           = "*"
+  destination_port_ranges     = ["8080", "5701"]
+  source_address_prefix       = "VirtualNetwork"
+  destination_address_prefix  = "VirtualNetwork"
+  resource_group_name         = azurerm_resource_group.classic_app.name
+  network_security_group_name = azurerm_network_security_group.management.name
+}
+
+resource "azurerm_network_security_rule" "management_ssh_rdp" {
+  name                        = "allow_ssh_rds_outbound"
+  priority                    = 100
+  direction                   = "Outbound"
+  access                      = "Allow"
+  protocol                    = "*"
+  source_port_range           = "*"
+  destination_port_ranges     = ["22", "3389"]
+  source_address_prefix       = "*"
+  destination_address_prefix  = "VirtualNetwork"
+  resource_group_name         = azurerm_resource_group.classic_app.name
+  network_security_group_name = azurerm_network_security_group.management.name
+}
+
+resource "azurerm_network_security_rule" "management_azure_cloud" {
+  name                        = "allow_azure_cloud_outbound"
+  priority                    = 110
+  direction                   = "Outbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "443"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "AzureCloud"
+  resource_group_name         = azurerm_resource_group.classic_app.name
+  network_security_group_name = azurerm_network_security_group.management.name
+}
+
+resource "azurerm_network_security_rule" "management_vnet_outbound" {
+  name                        = "allow_bastion_communication_outbound"
+  priority                    = 120
+  direction                   = "Outbound"
+  access                      = "Allow"
+  protocol                    = "*"
+  source_port_range           = "*"
+  destination_port_ranges     = ["8080", "5701"]
+  source_address_prefix       = "VirtualNetwork"
+  destination_address_prefix  = "VirtualNetwork"
+  resource_group_name         = azurerm_resource_group.classic_app.name
+  network_security_group_name = azurerm_network_security_group.management.name
+}
+
+resource "azurerm_network_security_rule" "management_internet_outbound" {
+  name                        = "allow_get_session_information"
+  priority                    = 130
+  direction                   = "Outbound"
+  access                      = "Allow"
+  protocol                    = "*"
+  source_port_range           = "*"
+  destination_port_range      = "80"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "Internet"
   resource_group_name         = azurerm_resource_group.classic_app.name
   network_security_group_name = azurerm_network_security_group.management.name
 }
@@ -145,7 +258,7 @@ resource "azurerm_subnet" "gateway" {
 }
 
 resource "azurerm_subnet" "management" {
-  name                 = "management"
+  name                 = "AzureBastionSubnet"
   resource_group_name  = azurerm_resource_group.classic_app.name
   virtual_network_name = azurerm_virtual_network.classic_app.name
   address_prefixes     = ["10.0.0.32/27"]
@@ -178,7 +291,7 @@ resource "azurerm_subnet_network_security_group_association" "gateway_http" {
   network_security_group_id = azurerm_network_security_group.gateway.id
 }
 
-resource "azurerm_subnet_network_security_group_association" "management_ssh" {
+resource "azurerm_subnet_network_security_group_association" "management_bastion" {
   subnet_id                 = azurerm_subnet.management.id
   network_security_group_id = azurerm_network_security_group.management.id
 }
@@ -211,42 +324,14 @@ resource "azurerm_virtual_network" "classic_app" {
   }
 }
 
-# LOADBALANCER
-#resource "azurerm_lb" "logic" {
-#  name                = "logic"
-#  sku                 = "Basic"
-#  location            = azurerm_resource_group.classic_app.location
-#  resource_group_name = azurerm_resource_group.classic_app.name
-#
-#  frontend_ip_configuration {
-#    name                          = "logic"
-#    subnet_id                     = azurerm_subnet.logic.id
-#    private_ip_address_allocation = "Dynamic"
-#  }
-#}
-#
-#resource "azurerm_lb" "web" {
-#  name                = "web"
-#  sku                 = "Basic"
-#  location            = azurerm_resource_group.classic_app.location
-#  resource_group_name = azurerm_resource_group.classic_app.name
-#
-#  frontend_ip_configuration {
-#    name                          = "web"
-#    subnet_id                     = azurerm_subnet.web.id
-#    private_ip_address_allocation = "Dynamic"
-#  }
-#}
-
 # BASTION HOST
-
 resource "azurerm_public_ip" "bastion" {
   name                = "bastion"
   location            = azurerm_resource_group.classic_app.location
   resource_group_name = azurerm_resource_group.classic_app.name
-  allocation_method   = "Dynamic"
+  allocation_method   = "Static"
+  sku                 = "Standard"
 }
-
 
 resource "azurerm_bastion_host" "bastion" {
   name                = "bastion"
