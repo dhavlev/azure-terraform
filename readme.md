@@ -24,7 +24,7 @@ This repository contains the terraform code responsible for creating classic thr
 
 ## Design and Request Flow
 
-![Request Flow](./docs/flow.png)
+![Request Flow](./docs/flow.JPG)
 
 <!---
 ```mermaid
