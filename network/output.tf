@@ -21,3 +21,7 @@ output "azurerm_subnet_logic" {
 output "azurerm_subnet_data" {
   value = azurerm_subnet.data.id
 }
+
+output "azurerm_virtual_network_classic_app" {
+  value = azurerm_virtual_network.classic_app.id
+}
