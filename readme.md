@@ -24,15 +24,19 @@ This repository contains the terraform code responsible for creating classic thr
 
 ## Design and Request Flow
 
+![Request Flow](./docs/flow.png)
+
+<!---
 ```mermaid
 graph LR
-  A((User)) -->|80/443| B([Gateway LB])
-  B --> |80| C[Web VMs]
-  C --> |3000| D([Logic LB])
-  D --> |3000| E[Logic VMs]
-  E --> |3000| G([Data LB])
-  G --> |3000| H[Data VM]
+  A((User)) -- |80/443| B([Gateway LB])
+  B --  |80| C[Web VMs]
+  C -- |3000| D([Logic LB])
+  D -- |3000| E[Logic VMs]
+  E -- |3000| G([Data LB])
+  G -- |3000| H[Data VM]
 ```
+--->
 
 ## Technical Design
 
