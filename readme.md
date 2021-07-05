@@ -33,10 +33,9 @@ graph LR
   B --  |80| C[Web VMs]
   C -- |3000| D([Logic LB])
   D -- |3000| E[Logic VMs]
-  E -- |3000| G([Data LB])
-  G -- |3000| H[Data VM]
-```
---->
+  E -- |3306| G([Data LB])
+  G -- |3306| H[Data VM]
+---->
 
 ## Technical Design
 
